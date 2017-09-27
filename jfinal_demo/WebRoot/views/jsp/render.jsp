@@ -7,20 +7,8 @@
 <title>Insert title here</title>
 </head>
 <body>
-<ul>
-	<li>
-		<dl>
-			<dt>attr</dt>
-			<dd>${attr}</dd>
-		</dl>
-
-	</li>
-	<li>
-		<dl>
-			<dt>sessionKey</dt>
-			<dd>${sessionScope.sessionKey}</dd>
-		</dl>
-	</li>
-</ul>
+	<ul>
+		<li>欢迎来到 render.jsp 页面...</li>
+	</ul>
 </body>
 </html>

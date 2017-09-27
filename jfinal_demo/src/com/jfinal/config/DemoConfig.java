@@ -6,8 +6,11 @@ import com.jfinal.config.Interceptors;
 import com.jfinal.config.JFinalConfig;
 import com.jfinal.config.Plugins;
 import com.jfinal.config.Routes;
+import com.jfinal.controller.BeforeController;
 import com.jfinal.controller.HelloController;
+import com.jfinal.controller.RenderController;
 import com.jfinal.controller.UserController;
+import com.jfinal.interceptor.AuthInterceptor;
 import com.jfinal.kit.PropKit;
 import com.jfinal.model.Blog;
 import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
@@ -43,14 +46,23 @@ public class DemoConfig extends JFinalConfig {
 		me.add("/hello", HelloController.class);
 		me.add("/user", UserController.class);
 		
-		me.add(new FrontRoutes()); // 前端路由
-		me.add(new AdminRoutes()); // 后端路由
+		/***
+		 * render("render.html") 渲染名为 render.html的视图,该视图的全路 径 为 "/views/html/render.html".
+		 * render("/views/jsp/render.jsp") 渲染名为 render.jsp的视图,该视图的全路 径 为"/views/jsp/render.jsp",即当参数以"/"开头时将 采用绝对路径.
+		 */
+		me.add("/render", RenderController.class, "/views/html");
+		
+		me.add("/before", BeforeController.class);
+		
 		/**
 		 * 如果 JFinal 默认路由规则不能满足需求，开发者还可以根据需要使用 Handler 定制更加个 性化的路由，大体思路就是在 Handler 中改变第一个参数 String target 的值。
 		 * JFinal 路由还可以进行拆分配置，这对大规模团队开发特别有用.
 		 * FrontRoutes 类中配置了系统前端路由，AdminRoutes 配置了系统后端路由， DemoConfig.configRoute(…)方法将拆分后的这两个路由合并起来。
 		 * 使用这种拆分配置不仅 可以让 DemoConfig 文件更简洁， 而且有利于大规模团队开发， 避免多人同时修改 DemoConfig 时的版本冲突。
 		 */
+		me.add(new FrontRoutes()); // 前端路由
+		me.add(new AdminRoutes()); // 后端路由
+
 	}
 
 	@Override
@@ -95,6 +107,18 @@ public class DemoConfig extends JFinalConfig {
 	public void configInterceptor(Interceptors me) {
 		// TODO Auto-generated method stub
 		//me.add(new AuthInterceptor());
+		
+		// 添加控制层全局拦截器
+		//me.addGlobalActionInterceptor(globalActionInterceptor);
+		// 添加业务层全局拦截器
+		//me.addGlobalServiceInterceptor(globalServiceInterceptor);
+		// 为兼容老版本保留的方法,功能与addGlobalActionInterceptor完全一样
+		//me.add(new GlobalActionInterceptor());
+		
+		/***
+		 * 当某个 Method 被多个级别的拦截器所拦截,拦截器各级别执行的次序依次为:Global、Inject、Class、Method,
+		 * 如果同级中有多个拦截器,那么同级中的执行次序是:配置在前面的 先执行.
+		 */
 	}
 
 	/***

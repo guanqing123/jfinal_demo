@@ -8,14 +8,12 @@ import com.jfinal.config.Plugins;
 import com.jfinal.config.Routes;
 import com.jfinal.controller.HelloController;
 import com.jfinal.controller.UserController;
-import com.jfinal.handler.ResourceHandler;
-import com.jfinal.interceptor.AuthInterceptor;
-import com.jfinal.kit.Prop;
 import com.jfinal.kit.PropKit;
+import com.jfinal.model.Blog;
 import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
+import com.jfinal.plugin.activerecord.dialect.OracleDialect;
 import com.jfinal.plugin.c3p0.C3p0Plugin;
-import com.jfinal.plugin.druid.DruidPlugin;
-import com.jfinal.plugin.redis.RedisPlugin;
+import com.jfinal.render.ViewType;
 import com.jfinal.route.AdminRoutes;
 import com.jfinal.route.FrontRoutes;
 import com.jfinal.template.Engine;
@@ -30,7 +28,7 @@ public class DemoConfig extends JFinalConfig {
 	public void configConstant(Constants me) {
 		// TODO Auto-generated method stub
 		me.setDevMode(true);
-		//me.setViewType(ViewType.JSP);	如下代码配置了 JFinal 运行在开发模式下且默认视图类型为 JSP
+		me.setViewType(ViewType.JSP);	//如下代码配置了 JFinal 运行在开发模式下且默认视图类型为 JSP
 	}
 
 	
@@ -69,11 +67,12 @@ public class DemoConfig extends JFinalConfig {
 	public void configPlugin(Plugins me) {
 		// TODO Auto-generated method stub
 		loadPropertyFile("pool.properties");
-		C3p0Plugin c3p0Plugin = new C3p0Plugin(getProperty("erp.url"),getProperty("erp.username"),getProperty("erp.password"));
+		C3p0Plugin c3p0Plugin = new C3p0Plugin(getProperty("erpUrl"),getProperty("erpUsername"),getProperty("erpPassword"));
 		me.add(c3p0Plugin);
 		ActiveRecordPlugin arp = new ActiveRecordPlugin(c3p0Plugin);
 		me.add(arp);
-		//arp.addMapping("user",User.class);
+		arp.setDialect(new OracleDialect());	//防止报 java.sql.SQLSyntaxErrorException: ORA-00911: 无效字符  com.jfinal.plugin.activerecord.ActiveRecordException: java.sql.SQLSyntaxErrorException: ORA-00911: 无效字符
+		arp.addMapping("blog",Blog.class);
 		
 		// 非第一次使用use加载的配置，需要通过每次使用use来指定配置文件名再来取值
 		/*String redisHost = PropKit.use("redis.properties").get("host");
